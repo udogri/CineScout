@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { getPopularMovies } from "../services/movieApi";
 import type { Movie } from "../types/Movie";
 import { getPosterUrl } from "../utils/image";
-import { Button, Input, useDisclosure } from "@chakra-ui/react";
+import { Button, HStack, Input, useDisclosure } from "@chakra-ui/react";
 import MovieModal from "../components/MovieModal";
 import useDebounce from "../hooks/useDebounce";
 import { searchMovies } from "../services/movieApi";
@@ -33,6 +33,10 @@ const Movies = () => {
     const debouncedQuery = useDebounce(query, 500);
     const [watchlist, setWatchlist] = useState<number[]>([]);
     const [showOnlyWatchlist, setShowOnlyWatchlist] = useState(false);
+    const [page, setPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+
+
 
 
     const openMovie = (id: number) => {
@@ -41,24 +45,30 @@ const Movies = () => {
     };
 
 
+
     useEffect(() => {
         setWatchlist(getWatchlist());
+
         const fetch = async () => {
             setLoading(true);
 
-            if (!debouncedQuery.trim()) {
-                const data = await getPopularMovies();
-                setMovies(data);
-            } else {
-                const data = await searchMovies(debouncedQuery);
-                setMovies(data);
-            }
+            const data = debouncedQuery
+                ? await searchMovies(debouncedQuery, page)
+                : await getPopularMovies(page);
 
+            setMovies(data.results);
+            setTotalPages(data.total_pages);
             setLoading(false);
         };
 
         fetch();
+    }, [debouncedQuery, page]);
+
+    useEffect(() => {
+        setPage(1);
     }, [debouncedQuery]);
+
+
 
 
     if (loading)
@@ -71,6 +81,9 @@ const Movies = () => {
     const displayedMovies = showOnlyWatchlist
         ? movies.filter((m) => watchlist.includes(m.id))
         : movies;
+
+    
+
 
 
     return (
@@ -152,6 +165,27 @@ const Movies = () => {
                     </Box>
                 ))}
             </SimpleGrid>
+            <HStack mt={8} justify="center" spacing={4}>
+                <Button
+                    onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                    isDisabled={page === 1}
+                >
+                    Prev
+                </Button>
+
+                <Text>
+                    Page {page} / {totalPages}
+                </Text>
+
+                <Button
+                    onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+                    isDisabled={page === totalPages}
+                >
+                    Next
+                </Button>
+            </HStack>
+
+
             <MovieModal
                 isOpen={isOpen}
                 onClose={onClose}
