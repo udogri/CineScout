@@ -1,55 +1,45 @@
-import {
-    Box,
-    Image,
-    Text,
-    Stack,
-    Badge,
-  } from "@chakra-ui/react";
-  
-  interface BookCardProps {
-    title: string;
-    author: string;
-    thumbnail?: string;
-    publishedDate?: string;
-  }
-  
-  const BookCard = ({
-    title,
-    author,
-    thumbnail,
-    publishedDate,
-  }: BookCardProps) => {
-    return (
-      <Box
-        borderWidth="1px"
-        borderRadius="lg"
-        overflow="hidden"
-        maxW="250px"
-      >
-        <Image
-          src={thumbnail || "https://via.placeholder.com/250x350"}
-          alt={title}
-          h="350px"
-          w="100%"
-          objectFit="cover"
-        />
-  
-        <Stack p={4} spacing={2}>
-          <Text fontWeight="bold" noOfLines={2}>
-            {title}
-          </Text>
-  
-          <Text fontSize="sm" color="gray.500">
-            {author}
-          </Text>
-  
-          {publishedDate && (
-            <Badge w="fit-content">{publishedDate}</Badge>
-          )}
-        </Stack>
-      </Box>
-    );
-  };
-  
-  export default BookCard;
-  
+import { Box, Image, Stack, Text, Heading } from "@chakra-ui/react";
+import type { Book } from "../types/Book";
+
+interface Props {
+  book: Book;
+  onClick?: () => void;
+}
+
+const BookCard = ({ book, onClick }: Props) => {
+  return (
+    <Box
+      bg="gray.800"
+      borderRadius="lg"
+      overflow="hidden"
+      boxShadow="lg"
+      _hover={{ transform: onClick ? "scale(1.04)" : "none" }}
+      transition="0.2s"
+      cursor={onClick ? "pointer" : "default"}
+    >
+      <Image
+        src={book.cover || "https://via.placeholder.com/200x300?text=No+Cover"}
+        alt={book.title}
+        h={{ base: "200px", sm: "220px", md: "260px" }}
+        w="100%"
+        objectFit="cover"
+      />
+
+      <Stack p={3}>
+        <Heading size="sm" noOfLines={2}>
+          {book.title}
+        </Heading>
+
+        <Text fontSize={{ base: "xs", sm: "sm" }} color="gray.400">
+          {book.authors.join(", ")}
+        </Text>
+
+        <Text fontSize="xs" color="gray.500">
+          {book.year}
+        </Text>
+      </Stack>
+    </Box>
+  );
+};
+
+export default BookCard;

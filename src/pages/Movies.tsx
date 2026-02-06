@@ -105,7 +105,7 @@ const Movies = () => {
             </Button>
 
             <SimpleGrid
-                columns={{ base: 2, sm: 2, md: 3, lg: 4, xl: 5 }}
+                columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
                 spacing={6}
             >
                 {displayedMovies.map((movie) => (
@@ -121,7 +121,7 @@ const Movies = () => {
                         transition="0.2s ease"
                         boxShadow="lg"
                     >
-                        <IconButton
+                        {/* <IconButton
                             aria-label="watchlist"
                             icon={<StarIcon />}
                             size="sm"
@@ -134,7 +134,7 @@ const Movies = () => {
                                 const updated = toggleWatchlist(movie.id);
                                 setWatchlist(updated);
                             }}
-                        />
+                        /> */}
 
                         <Image
                             src={getPosterUrl(movie.poster_path)}

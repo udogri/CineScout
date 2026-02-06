@@ -1,23 +1,24 @@
-import { Box } from "@chakra-ui/react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-
-import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
+import { Tabs, TabList, TabPanels, Tab, TabPanel } from "@chakra-ui/react";
 import Movies from "./pages/Movies";
-import Favorites from "./pages/Favorites";
+import Books from "./pages/Books";
 
 const App = () => {
   return (
-    <BrowserRouter>
-      <Box minH="100vh">
-        <Navbar />
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/movies" element={<Movies />} />
-          <Route path="/favorites" element={<Favorites />} />
-        </Routes>
-      </Box>
-    </BrowserRouter>
+    <Tabs variant="soft-rounded" colorScheme="purple">
+      <TabList justifyContent="center" mt={4}>
+        <Tab>🎬 Movies</Tab>
+        <Tab>📚 Books</Tab>
+      </TabList>
+
+      <TabPanels>
+        <TabPanel>
+          <Movies />
+        </TabPanel>
+        <TabPanel>
+          <Books />
+        </TabPanel>
+      </TabPanels>
+    </Tabs>
   );
 };
 
