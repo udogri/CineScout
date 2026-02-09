@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPopularMovies } from "../services/movieApi";
+import { getPopularMovies } from "./services/movieApi";
 import type { Movie } from "./types/Movie";
 
 const Movies = () => {
@@ -8,7 +8,7 @@ const Movies = () => {
   useEffect(() => {
     const fetchMovies = async () => {
       const data = await getPopularMovies();
-      setMovies(data);
+      setMovies(data.results);
     };
 
     fetchMovies();

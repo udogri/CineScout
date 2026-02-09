@@ -1,8 +1,9 @@
 export interface Book {
-    id: string;
+    key: string; // <-- THIS is the real id (/works/OLxxxxW)
+    bookKey: string;
     title: string;
-    authors: string[];
-    year: string | number;
-    cover: string | null;
+    author_name?: string[];
+    first_publish_year?: number;
+    cover_i?: number;
   }
   

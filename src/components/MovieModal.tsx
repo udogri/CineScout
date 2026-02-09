@@ -24,7 +24,19 @@ import {
   }
   
   const MovieModal = ({ isOpen, onClose, movieId }: Props) => {
-    const [movie, setMovie] = useState<any>(null);
+    interface Movie {
+      backdrop_path: string;
+      title: string;
+      vote_average: number;
+      release_date: string;
+      runtime: number;
+      overview: string;
+      videos?: {
+        results: { type: string; site: string; key: string }[];
+      };
+    }
+  
+    const [movie, setMovie] = useState<Movie | null>(null);
     const [loading, setLoading] = useState(false);
   
     useEffect(() => {
@@ -41,8 +53,13 @@ import {
     }, [movieId]);
   
     const trailer = movie?.videos?.results?.find(
-      (vid: any) => vid.type === "Trailer" && vid.site === "YouTube"
-    );
+        (vid) =>
+          vid.site === "YouTube" &&
+          (vid.type === "Trailer" ||
+           vid.type === "Teaser" ||
+           vid.name.toLowerCase().includes("trailer"))
+      );
+      
   
     return (
       <Modal isOpen={isOpen} onClose={onClose} size="4xl" isCentered>

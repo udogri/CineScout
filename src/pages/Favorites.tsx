@@ -5,7 +5,7 @@ import type { Movie } from "../types/Movie";
 import MovieCard from "../components/MovieCard";
 import EmptyState from "../components/EmptyState";
 import { getPosterUrl } from "../utils/image";
-import { getPopularMovies } from "../services/movieApi";
+import { getPopularMovies } from "../services/movieApi"; 
 
 const FAVORITES_KEY = "favorite_movies";
 
@@ -13,28 +13,28 @@ const Favorites = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(FAVORITES_KEY);
-    if (stored) {
-      const ids = JSON.parse(stored);
-      setFavoriteIds(ids);
-      loadFavorites(ids);
-    }
-  }, []);
+  
 
   const loadFavorites = async (ids: number[]) => {
     const allMovies = await getPopularMovies(); // simple approach
-    const filtered = allMovies.filter((m: Movie) =>
+    const filtered = allMovies.results.filter((m: Movie) =>
       ids.includes(m.id)
     );
     setMovies(filtered);
   };
 
-  if (favoriteIds.length === 0) {
-    return <EmptyState message="No favorites yet ⭐" />;
-  }
+  useEffect(() => {
+    const stored = localStorage.getItem(FAVORITES_KEY);
+    if (stored) {
+      const ids = JSON.parse(stored);
+      loadFavorites(ids);
+      setFavoriteIds(ids);
+    }
+  }, []);
 
-  return (
+  return favoriteIds.length === 0 ? (
+    <EmptyState message="No favorites yet ⭐" />
+  ) : (
     <Box p={6}>
       <Text mb={4} fontWeight="bold">
         Your Favorites ❤️

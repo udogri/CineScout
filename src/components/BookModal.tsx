@@ -1,4 +1,3 @@
-// src/components/BookModal.tsx
 import {
     Modal,
     ModalOverlay,
@@ -13,6 +12,7 @@ import {
     VStack,
     Spinner,
     Center,
+    Divider,
   } from "@chakra-ui/react";
   import { useEffect, useState } from "react";
   
@@ -23,10 +23,13 @@ import {
     subjects?: string[];
     cover?: string | null;
     description?: string;
+    rating?: number;
+    ratingCount?: number;
+    reviews?: { author: string; text: string }[];
   }
   
   interface BookModalProps {
-    bookKey: string | null; // OpenLibrary key
+    bookKey: string | null;
     isOpen: boolean;
     onClose: () => void;
   }
@@ -36,54 +39,123 @@ import {
     const [loading, setLoading] = useState(false);
   
     useEffect(() => {
-      if (!bookKey) return;
+      if (!bookKey || !isOpen) return;
   
       const fetchBook = async () => {
         setLoading(true);
-        try {
-          const res = await fetch(`https://openlibrary.org${bookKey}.json`);
-          if (!res.ok) throw new Error("Failed to fetch book details");
+        setBook(null);
   
+        try {
+          let workKey = bookKey;
+  
+          // Convert /books/ → /works/
+          if (bookKey.startsWith("/books/")) {
+            const bookRes = await fetch(`https://openlibrary.org${bookKey}.json`);
+            const bookData = await bookRes.json();
+            if (bookData.works?.[0]?.key) {
+              workKey = bookData.works[0].key;
+            }
+          }
+  
+          // MAIN WORK DATA
+          const res = await fetch(`https://openlibrary.org${workKey}.json`);
+          if (!res.ok) throw new Error("Failed to fetch work");
           const data = await res.json();
   
+          // COVER
           const coverId = data.covers?.[0] ?? null;
           const cover = coverId
             ? `https://covers.openlibrary.org/b/id/${coverId}-L.jpg`
             : null;
   
+          // DESCRIPTION
           const description =
             typeof data.description === "string"
               ? data.description
               : data.description?.value ?? "No description available.";
   
-          const authors = data.authors
-            ? await Promise.all(
-                data.authors.map(async (a: any) => {
-                  const authorRes = await fetch(`https://openlibrary.org${a.author.key}.json`);
-                  const authorData = await authorRes.json();
-                  return authorData.name;
-                })
-              )
-            : ["Unknown"];
+          // AUTHORS
+          let authors: string[] = ["Unknown"];
+          if (data.authors) {
+            authors = await Promise.all(
+              data.authors.map(async (a: { author: { key: string } }) => {
+                const authorRes = await fetch(
+                  `https://openlibrary.org${a.author.key}.json`
+                );
+                const authorData = await authorRes.json();
+                return authorData.name;
+              })
+            );
+          }
+  
+          // YEAR (robust)
+          let publishYear: string | number = "—";
+  
+          if (data.first_publish_date) publishYear = data.first_publish_date;
+  
+          try {
+            const editionsRes = await fetch(
+              `https://openlibrary.org${workKey}/editions.json?limit=1`
+            );
+            if (editionsRes.ok) {
+              const editionsData = await editionsRes.json();
+              const edition = editionsData.entries?.[0];
+              if (edition?.publish_date) publishYear = edition.publish_date;
+            }
+          } catch {}
+  
+          // RATINGS
+          let ratingData: any = null;
+          try {
+            const r = await fetch(
+              `https://openlibrary.org${workKey}/ratings.json`
+            );
+            if (r.ok) ratingData = await r.json();
+          } catch {}
+  
+          // REVIEWS (404 = normal)
+          let reviews: { author: string; text: string }[] = [];
+          try {
+            const reviewRes = await fetch(
+              `https://openlibrary.org${workKey}/reviews.json?limit=3`
+            );
+  
+            if (reviewRes.status === 200) {
+              const j = await reviewRes.json();
+              reviews =
+                j.entries?.map((rev: any) => ({
+                  author: rev.author?.display_name || "Anonymous",
+                  text: rev.review || "No text",
+                })) ?? [];
+            }
+          } catch {}
   
           setBook({
             title: data.title,
             authors,
-            year: data.first_publish_date ?? data.created?.value ?? "—",
-            subjects: data.subjects || [],
+            year: publishYear,
+            subjects: data.subjects ?? [],
             cover,
             description,
+            rating: ratingData?.summary?.average,
+            ratingCount: ratingData?.summary?.count,
+            reviews,
           });
         } catch (err) {
           console.error(err);
-          setBook(null);
+          setBook({
+            title: "Failed to load book",
+            authors: [],
+            description: "OpenLibrary returned incomplete data.",
+            reviews: [],
+          });
         } finally {
           setLoading(false);
         }
       };
   
       fetchBook();
-    }, [bookKey]);
+    }, [bookKey, isOpen]);
   
     return (
       <Modal isOpen={isOpen} onClose={onClose} size="xl" scrollBehavior="inside">
@@ -97,7 +169,7 @@ import {
                 <Spinner size="xl" />
               </Center>
             ) : (
-              <VStack spacing={4} align="stretch">
+              <VStack spacing={5} align="stretch">
                 {book.cover && (
                   <Image
                     src={book.cover}
@@ -119,14 +191,21 @@ import {
                   <Text>{book.year}</Text>
                 </Stack>
   
-                {book.subjects.length > 0 && (
+                {book.rating && (
+                  <Stack spacing={1}>
+                    <Text fontWeight="bold">Rating:</Text>
+                    <Text>
+                      ⭐ {book.rating.toFixed(1)} ({book.ratingCount ?? 0} votes)
+                    </Text>
+                  </Stack>
+                )}
+  
+                {(book.subjects ?? []).length > 0 && (
                   <Stack spacing={1}>
                     <Text fontWeight="bold">Subjects:</Text>
-                    <Stack direction="row" wrap="wrap" spacing={2}>
-                      {book.subjects.map((s, i) => (
-                        <Badge key={i} colorScheme="green">
-                          {s}
-                        </Badge>
+                    <Stack direction="row" wrap="wrap">
+                      {book.subjects.slice(0, 8).map((subject) => (
+                        <Badge key={subject}>{subject}</Badge>
                       ))}
                     </Stack>
                   </Stack>
@@ -134,8 +213,28 @@ import {
   
                 <Stack spacing={1}>
                   <Text fontWeight="bold">Description:</Text>
-                  <Text>{book.description}</Text>
+                  <Text whiteSpace="pre-wrap">{book.description}</Text>
                 </Stack>
+  
+                {book.reviews && book.reviews.length > 0 && (
+                  <>
+                    <Divider />
+                    <Text fontWeight="bold" fontSize="lg">
+                      Community Reviews
+                    </Text>
+  
+                    <VStack align="stretch" spacing={3}>
+                      {book.reviews.map((rev, i) => (
+                        <Stack key={i} p={3} bg="gray.800" borderRadius="md">
+                          <Text fontWeight="bold">{rev.author}</Text>
+                          <Text fontSize="sm" color="gray.300">
+                            {rev.text}
+                          </Text>
+                        </Stack>
+                      ))}
+                    </VStack>
+                  </>
+                )}
               </VStack>
             )}
           </ModalBody>

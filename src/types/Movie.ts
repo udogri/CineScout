@@ -1,11 +1,18 @@
 export interface Movie {
-    id: number;
-    title: string;
-    poster_path: string | null;
-    backdrop_path: string | null;
-    release_date: string;
-    vote_average: number;
-    overview: string;
-    popularity: number;
-  }
-  
+  backdrop_path: string;
+  title: string;
+  vote_average: number;
+  release_date: string;
+  runtime: number;
+  overview: string;
+  videos?: {
+    results: {
+      id: string;
+      key: string;
+      name: string;
+      site: string;
+      type: string;
+      official: boolean;
+    }[];
+  };
+}

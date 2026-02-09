@@ -1,38 +1,49 @@
-const BASE_URL = "https://openlibrary.org/search.json";
-
-// simple cache (prevents repeat requests while paging back & forth)
-const cache = new Map<string, any>();
+// src/services/bookApi.ts
 
 export const searchBooks = async (query: string, page = 1) => {
-  if (!query || query.length < 3) {
-    return { items: [], totalItems: 0 };
-  }
-
-  const key = `${query}-${page}`;
-  if (cache.has(key)) return cache.get(key);
-
-  const res = await fetch(
-    `${BASE_URL}?q=${encodeURIComponent(query)}&page=${page}`
-  );
-
-  if (!res.ok) throw new Error("Failed to fetch books");
-
-  const data = await res.json();
-
-  // normalize data → match your existing UI
-  const normalized = {
-    totalItems: data.numFound ?? 0,
-    items: (data.docs || []).map((book: any) => ({
-      id: book.key, // unique id
-      title: book.title,
-      authors: book.author_name ?? ["Unknown author"],
-      year: book.first_publish_year ?? "—",
-      cover: book.cover_i
-        ? `https://covers.openlibrary.org/b/id/${book.cover_i}-M.jpg`
-        : null,
-    })),
+    const res = await fetch(
+      `https://openlibrary.org/search.json?q=${encodeURIComponent(query)}&page=${page}&limit=12`
+    );
+  
+    const data = await res.json();
+  
+    return {
+      items: data.docs || [],
+    };
   };
-
-  cache.set(key, normalized);
-  return normalized;
-};
+  
+  
+  
+  // RANDOM DISCOVERY BOOKS
+  export const getRandomBooks = async (category = "all", page = 1) => {
+    const SUBJECTS = [
+      "fantasy",
+      "romance",
+      "mystery",
+      "science_fiction",
+      "history",
+      "horror",
+      "nonfiction",
+    ];
+  
+    const subject =
+      category === "all"
+        ? SUBJECTS[Math.floor(Math.random() * SUBJECTS.length)]
+        : category;
+  
+    // OpenLibrary uses offset not page
+    const offset = (page - 1) * 12;
+  
+    const res = await fetch(
+      `https://openlibrary.org/subjects/${subject}.json?limit=12&offset=${offset}`
+    );
+  
+    const data = await res.json();
+  
+    return {
+      items: data.works || [],
+      subject,
+    };
+  };
+  
+  
