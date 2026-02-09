@@ -13,7 +13,7 @@ import {
   HStack,
 } from "@chakra-ui/react";
 import { searchBooks, getRandomBooks } from "../services/bookApi";
-import { getFavorites, toggleFavorite, isFavorite } from "../utils/Favorites";
+import { getFavorites, toggleFavorite, isFavorite } from "../utils/favorites";
 import type { Book } from "../types/Book";
 import BookCard from "../components/BookCard";
 import BookModal from "../components/BookModal";
@@ -38,18 +38,18 @@ const Books = () => {
 
   const debouncedQuery = useDebounce(query, 600);
 
-  // BUILD SEARCH TERM CORRECTLY (OpenLibrary is picky)
-  const buildSearchTerm = () => {
-    if (category === "all") return debouncedQuery;
+//   // BUILD SEARCH TERM CORRECTLY (OpenLibrary is picky)
+//   const buildSearchTerm = () => {
+//     if (category === "all") return debouncedQuery;
 
-    if (!debouncedQuery) return `subject:${category}`;
+//     if (!debouncedQuery) return `subject:${category}`;
 
-    // nonfiction must be forced filter
-    if (category === "nonfiction")
-      return `${debouncedQuery} subject:nonfiction`;
+//     // nonfiction must be forced filter
+//     if (category === "nonfiction")
+//       return `${debouncedQuery} subject:nonfiction`;
 
-    return `${debouncedQuery} subject:${category}`;
-  };
+//     return `${debouncedQuery} subject:${category}`;
+//   };
 
   // LOAD BOOKS
   const fetchBooks = useCallback(async () => {

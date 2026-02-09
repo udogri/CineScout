@@ -56,8 +56,9 @@ import {
         (vid) =>
           vid.site === "YouTube" &&
           (vid.type === "Trailer" ||
-           vid.type === "Teaser" ||
-           vid.name.toLowerCase().includes("trailer"))
+           vid.type === "Teaser"
+        //    vid.name.toLowerCase().includes("trailer")
+        )
       );
       
   
