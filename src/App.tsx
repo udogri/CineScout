@@ -1,4 +1,4 @@
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Text, Box, Container, HStack, Icon, useBreakpointValue } from "@chakra-ui/react";
+import { Tabs, TabList, TabPanels, Tab, TabPanel, Text, Box, Container, HStack, useBreakpointValue } from "@chakra-ui/react";
 import Movies from "./pages/Movies";
 import Books from "./pages/Books";
 import Navbar from "./components/Navbar";
