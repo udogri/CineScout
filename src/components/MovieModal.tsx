@@ -12,6 +12,7 @@ import {
     Box,
     Spinner,
     Center,
+    ModalHeader,
   } from "@chakra-ui/react";
   import { useEffect, useState } from "react";
   import { getMovieDetails } from "../services/movieApi";
@@ -66,7 +67,7 @@ import {
       <Modal isOpen={isOpen} onClose={onClose} size="4xl" isCentered>
         <ModalOverlay />
         <ModalContent bg="gray.900">
-          <ModalCloseButton />
+          <ModalHeader> <ModalCloseButton /></ModalHeader>
   
           <ModalBody p={6}>
             {loading || !movie ? (

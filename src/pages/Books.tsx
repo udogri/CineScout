@@ -126,8 +126,8 @@ const Books = () => {
           onChange={(e) => setQuery(e.target.value)}
         />
 
-        <Select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="all">All Categories</option>
+        <Select value={category} color="grey" onChange={(e) => setCategory(e.target.value)}>
+          <option  value="all">All Categories</option>
           <option value="fantasy">Fantasy</option>
           <option value="romance">Romance</option>
           <option value="mystery">Mystery</option>
@@ -154,7 +154,7 @@ const Books = () => {
       )}
 
       <SimpleGrid
-        columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 6 }}
+        columns={{ base: 1, sm: 2, md: 3, lg: 4, xl: 5 }}
         spacing={{ base: 3, sm: 4, md: 6 }}
       >
         {displayedBooks.map((book: any, index) => (

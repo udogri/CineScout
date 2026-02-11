@@ -136,21 +136,23 @@ const totalPagesRef = useRef(1);
   return (
     <Box p={6} ref={containerRef}>
       <VStack spacing={4} align="stretch" mb={6}>
-        <Heading>🎬 Movies</Heading>
+        {/* <Heading>🎬 Movies</Heading> */}
 
         <Select
+        color="grey"
           placeholder="Filter by category"
           value={category}
           onChange={(e) => setCategory(e.target.value)}
         >
           {CATEGORIES.map((cat) => (
-            <option key={cat.value} value={cat.value}>
+            <option  key={cat.value} value={cat.value}>
               {cat.label}
             </option>
           ))}
         </Select>
 
         <Input
+        color="grey"
           placeholder="Search movies..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
