@@ -1,46 +1,89 @@
-import { Box, Image, Text, Badge, Stack } from "@chakra-ui/react";
+import { Box, Image, Text, Stack, HStack } from "@chakra-ui/react";
 
 interface MovieCardProps {
   title: string;
   poster: string;
   rating: number;
   releaseDate: string;
+  onClick?: () => void;
 }
 
-const MovieCard = ({ title, poster, rating, releaseDate }: MovieCardProps) => {
+const MovieCard = ({ title, poster, rating, releaseDate, onClick }: MovieCardProps) => {
   return (
     <Box
-      borderWidth="1px"
-      borderRadius="lg"
+      onClick={onClick}
+      cursor={onClick ? "pointer" : "default"}
+      position="relative"
       overflow="hidden"
-      maxW={{ base: "100%", sm: "200px", md: "220px", lg: "250px" }}
-      _hover={{ transform: "scale(1.03)" }}
-      transition="0.2s"
+      borderRadius="none"
+      bg="#0E0E10"
+      border="1px solid rgba(255,255,255,0.05)"
+      role="group"
+      transition="all 0.35s cubic-bezier(0.4, 0, 0.2, 1)"
+      _hover={{
+        transform: "translateY(-8px)",
+        boxShadow: "0 24px 48px rgba(0,0,0,0.7), 0 0 0 1px rgba(212,175,55,0.25)",
+        borderColor: "rgba(212,175,55,0.25)",
+      }}
     >
-      <Image
-        src={poster}
-        alt={title}
-        h={{ base: "250px", sm: "280px", md: "320px", lg: "350px" }}
-        w="100%"
-        objectFit="cover"
-      />
+      {/* Poster */}
+      <Box overflow="hidden" position="relative">
+        <Image
+          src={poster}
+          alt={title}
+          w="100%"
+          h={{ base: "260px", sm: "300px", md: "340px" }}
+          objectFit="cover"
+          transition="transform 0.5s ease"
+          _groupHover={{ transform: "scale(1.04)" }}
+        />
+        {/* Gradient overlay */}
+        <Box
+          position="absolute"
+          bottom={0}
+          left={0}
+          right={0}
+          h="60%"
+          bg="linear-gradient(to top, rgba(14,14,16,1) 0%, transparent 100%)"
+        />
+        {/* Rating badge - top right */}
+        <Box position="absolute" top={3} right={3}>
+          <HStack
+            spacing={1}
+            bg="rgba(8,8,10,0.85)"
+            backdropFilter="blur(8px)"
+            px={2}
+            py={1}
+            border="1px solid rgba(212,175,55,0.3)"
+          >
+            <Text fontSize="9px" color="#D4AF37">★</Text>
+            <Text fontSize="10px" letterSpacing="0.05em" color="white" fontWeight="600">
+              {rating.toFixed(1)}
+            </Text>
+          </HStack>
+        </Box>
+      </Box>
 
-      <Stack p={{ base: 2, sm: 3, md: 4 }} spacing={{ base: 1, sm: 2 }}>
-        <Text fontWeight="bold" fontSize={{ base: "sm", sm: "md" }} noOfLines={1}>
+      {/* Info */}
+      <Stack spacing={1} px={3} py={3} mt={-2}>
+        <Text
+          fontFamily="'Georgia', serif"
+          fontWeight="400"
+          fontSize="sm"
+          color="white"
+          noOfLines={1}
+          letterSpacing="0.01em"
+        >
           {title}
         </Text>
-
-        <Text fontSize={{ base: "xs", sm: "sm" }} color="gray.500">
-          {releaseDate}
-        </Text>
-
-        <Badge
-          w="fit-content"
-          colorScheme="green"
-          fontSize={{ base: "xs", sm: "sm" }}
+        <Text
+          fontSize="10px"
+          letterSpacing="0.15em"
+          textTransform="uppercase"
+          color="gray.600"
         >
-          ⭐ {rating}
-        </Badge>
+          {releaseDate?.slice(0, 4) ?? "—"}
+        </Text>
       </Stack>
     </Box>
   );

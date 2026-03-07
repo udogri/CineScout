@@ -1,54 +1,29 @@
-import { Tabs, TabList, TabPanels, Tab, TabPanel, Text, Box, Container, HStack, useBreakpointValue } from "@chakra-ui/react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Box, Flex } from "@chakra-ui/react";
+import Navbar from "./components/Navbar";
+import Footer from "./components/Footer";
 import Movies from "./pages/Movies";
 import Books from "./pages/Books";
-import Navbar from "./components/Navbar";
+import Home from "./pages/Home";
+import Favorites from "./pages/Favorites";
 
 const App = () => {
-  const isMobile = useBreakpointValue({ base: true, md: false });
-
   return (
-    <Box minH="100vh" bg="gray.950" color="white">
-      {/* HEADER */}
-      <Navbar />
-
-      {/* CONTENT */}
-      <Container maxW="7xl" py={{ base: 4, md: 6 }}>
-        <Tabs
-          variant="soft-rounded"
-          colorScheme="purple"
-          isFitted={!isMobile}
-          isLazy
-        >
-          <TabList
-            gap={2}
-            overflowX="auto"
-            pb={2}
-            css={{ scrollbarWidth: "none" }}
-          >
-            <Tab flexShrink={0}>
-              <HStack spacing={2}>
-                <Text display={{ base: "none", sm: "block" }}>Movies</Text>
-              </HStack>
-            </Tab>
-
-            <Tab flexShrink={0}>
-              <HStack spacing={2}>
-                <Text display={{ base: "none", sm: "block" }}>Books</Text>
-              </HStack>
-            </Tab>
-          </TabList>
-
-          <TabPanels mt={4}>
-            <TabPanel px={0}>
-              <Movies />
-            </TabPanel>
-            <TabPanel px={0}>
-              <Books />
-            </TabPanel>
-          </TabPanels>
-        </Tabs>
-      </Container>
-    </Box>
+    <BrowserRouter>
+      <Flex direction="column" minH="100vh" bg="#08080A" color="white">
+        <Navbar />
+        <Box flex={1}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/movies" element={<Movies />} />
+            <Route path="/books" element={<Books />} />
+            <Route path="/favorites" element={<Favorites />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </Box>
+        <Footer />
+      </Flex>
+    </BrowserRouter>
   );
 };
 

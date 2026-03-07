@@ -1,28 +1,33 @@
-const STORAGE_KEY = "book_favorites";
+const FAVORITES_KEY = "book_favorites";
 
 export const getFavorites = (): string[] => {
   try {
-    return JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    const stored = localStorage.getItem(FAVORITES_KEY);
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    // Deduplicate on read as a safety net
+    return [...new Set<string>(parsed)];
   } catch {
     return [];
   }
 };
 
-export const isFavorite = (key: string) => {
-  return getFavorites().includes(key);
-};
+export const toggleFavorite = (key: string): string[] => {
+  const current = getFavorites();
+  const exists = current.includes(key);
+  const updated = exists
+    ? current.filter((k) => k !== key)          // remove
+    : [...new Set([...current, key])];           // add, deduped
 
-export const toggleFavorite = (key: string) => {
-  const favorites = getFavorites();
-
-  let updated: string[];
-
-  if (favorites.includes(key)) {
-    updated = favorites.filter((k) => k !== key);
-  } else {
-    updated = [...favorites, key];
+  try {
+    localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+  } catch {
+    console.error("Failed to save favorites");
   }
 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updated));
   return updated;
+};
+
+export const isFavorite = (key: string): boolean => {
+  return getFavorites().includes(key);
 };
