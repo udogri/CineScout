@@ -22,6 +22,7 @@ const Home = () => {
       position="relative"
       overflow="hidden"
       display="flex"
+      py={{base:"0px", md:"50px"}}
       alignItems="center"
       justifyContent="center"
     >
