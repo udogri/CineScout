@@ -1,4 +1,4 @@
-import { Box, Heading, Text, Button, Stack, HStack, VStack } from "@chakra-ui/react";
+import { Box, Heading, Text, Button, HStack, VStack } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import { keyframes } from "@emotion/react";
 

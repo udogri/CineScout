@@ -1,4 +1,4 @@
-import { Center, VStack, Box, Text, keyframes } from "@chakra-ui/react";
+import { Center, VStack, Box, Text } from "@chakra-ui/react";
 
 const pulse = `
   @keyframes cinePulse {

@@ -1,4 +1,4 @@
-import { Box, Flex, HStack, VStack, Text, Link, Divider, Spacer } from "@chakra-ui/react";
+import { Box, Flex, HStack, Text, Link, Divider, Spacer } from "@chakra-ui/react";
 import { Link as RouterLink } from "react-router-dom";
 
 const NAV_LINKS = [
