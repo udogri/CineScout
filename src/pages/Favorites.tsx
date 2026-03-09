@@ -1,48 +1,56 @@
 import { useEffect, useState } from "react";
-import { Box, SimpleGrid, Text, VStack, HStack, Center } from "@chakra-ui/react";
+import { Box, SimpleGrid, Text, VStack, HStack, Center, useDisclosure } from "@chakra-ui/react";
 import type { Movie } from "../types/Movie";
 import MovieCard from "../components/MovieCard";
+import MovieModal from "../components/MovieModal";
 import { getPosterUrl } from "../utils/image";
 import { getMovieDetails } from "../services/movieApi";
 
 const FAVORITES_KEY = "favorite_movies";
 
 const Favorites = () => {
-  const [movies, setMovies] = useState<Movie[]>([]);
+  const [movies, setMovies]         = useState<Movie[]>([]);
   const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  const loadFavorites = async (ids: number[]) => {
-    setLoading(true);
-    try {
-      // Fetch each favorited movie individually by ID — the only reliable approach.
-      // Using allSettled so a single failed fetch doesn't block the rest.
-      const results = await Promise.allSettled(ids.map((id) => getMovieDetails(id)));
-      const fetched = results
-        .filter((r): r is PromiseFulfilledResult<Movie> => r.status === "fulfilled")
-        .map((r) => r.value);
-      setMovies(fetched);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const [loading, setLoading]       = useState(true); // starts true until first read
+  const [selectedMovie, setSelectedMovie] = useState<number | null>(null);
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(FAVORITES_KEY);
-      const ids: number[] = stored ? JSON.parse(stored) : [];
-      // Deduplicate in case of any storage inconsistency
-      const uniqueIds = [...new Set(ids)];
-      setFavoriteIds(uniqueIds);
-      if (uniqueIds.length > 0) {
-        loadFavorites(uniqueIds);
-      } else {
+    const init = async () => {
+      try {
+        const stored = localStorage.getItem(FAVORITES_KEY);
+        const ids: number[] = stored ? JSON.parse(stored) : [];
+        const uniqueIds = [...new Set(ids)] as number[];
+        setFavoriteIds(uniqueIds);
+
+        if (uniqueIds.length === 0) {
+          // Nothing to fetch — stop loading immediately
+          setLoading(false);
+          return;
+        }
+
+        const results = await Promise.allSettled(
+          uniqueIds.map((id) => getMovieDetails(id))
+        );
+        const fetched = results
+          .filter((r): r is PromiseFulfilledResult<Movie> => r.status === "fulfilled")
+          .map((r) => r.value);
+
+        setMovies(fetched);
+      } catch {
+        // Parse error or network failure — stop spinner regardless
+      } finally {
         setLoading(false);
       }
-    } catch {
-      setLoading(false);
-    }
+    };
+
+    init();
   }, []);
+
+  const openMovie = (id: number) => {
+    setSelectedMovie(id);
+    onOpen();
+  };
 
   return (
     <Box
@@ -55,16 +63,12 @@ const Favorites = () => {
       }}
     >
       <Box maxW="1400px" mx="auto">
-        {/* Header */}
+
+        {/* ── Header ── */}
         <HStack spacing={3} mb={8}>
           <Box w="3px" h="28px" bg="linear-gradient(to bottom, #D4AF37, #B8860B)" />
           <VStack align="start" spacing={0}>
-            <Text
-              fontSize="9px"
-              letterSpacing="0.3em"
-              textTransform="uppercase"
-              color="gray.600"
-            >
+            <Text fontSize="9px" letterSpacing="0.3em" textTransform="uppercase" color="gray.600">
               Your Collection
             </Text>
             <Text
@@ -77,25 +81,15 @@ const Favorites = () => {
             </Text>
           </VStack>
           {favoriteIds.length > 0 && (
-            <Box
-              ml="auto"
-              px={3}
-              py={1}
-              border="1px solid rgba(212,175,55,0.2)"
-              bg="rgba(212,175,55,0.04)"
-            >
-              <Text
-                fontSize="10px"
-                letterSpacing="0.2em"
-                textTransform="uppercase"
-                color="rgba(212,175,55,0.6)"
-              >
+            <Box ml="auto" px={3} py={1} border="1px solid rgba(212,175,55,0.2)" bg="rgba(212,175,55,0.04)">
+              <Text fontSize="10px" letterSpacing="0.2em" textTransform="uppercase" color="rgba(212,175,55,0.6)">
                 {favoriteIds.length} titles
               </Text>
             </Box>
           )}
         </HStack>
 
+        {/* ── States ── */}
         {loading ? (
           <Center h="60vh">
             <Box display="flex" gap="6px">
@@ -127,16 +121,11 @@ const Favorites = () => {
                 <Text fontSize="2xl" color="rgba(212,175,55,0.25)">★</Text>
               </Box>
               <VStack spacing={1}>
-                <Text
-                  fontSize="10px"
-                  letterSpacing="0.3em"
-                  textTransform="uppercase"
-                  color="gray.600"
-                >
+                <Text fontSize="10px" letterSpacing="0.3em" textTransform="uppercase" color="gray.600">
                   No favorites yet
                 </Text>
                 <Text fontSize="xs" color="gray.700">
-                  Star movies or books to save them here
+                  Star a movie to save it here
                 </Text>
               </VStack>
             </VStack>
@@ -150,11 +139,14 @@ const Favorites = () => {
                 poster={getPosterUrl(movie.poster_path)}
                 rating={movie.vote_average}
                 releaseDate={movie.release_date}
+                onClick={() => openMovie(movie.id)}
               />
             ))}
           </SimpleGrid>
         )}
       </Box>
+
+      <MovieModal isOpen={isOpen} onClose={onClose} movieId={selectedMovie} />
     </Box>
   );
 };

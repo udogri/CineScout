@@ -4,7 +4,6 @@ import { Link as RouterLink } from "react-router-dom";
 const NAV_LINKS = [
   { label: "Movies", path: "/movies" },
   { label: "Books", path: "/books" },
-  { label: "Favorites", path: "/favorites" },
 ];
 
 const CREDITS = [
