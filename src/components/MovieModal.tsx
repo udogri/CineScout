@@ -9,6 +9,7 @@ import {
   Box,
   Center,
   HStack,
+  VStack,
   Divider,
   Link,
   SimpleGrid,
@@ -67,8 +68,26 @@ const buildActionLinks = (): ActionLink[] => [
     hoverBg: "rgba(212,175,55,0.1)",
     hoverBorder: "rgba(212,175,55,0.5)",
   },
-  
-  
+  {
+    label: "Rent or Buy",
+    sublabel: "Amazon, Apple TV, Vudu, Google Play",
+    query: `rent buy online Amazon Apple Vudu`,
+    accent: "#60a5fa",
+    borderColor: "rgba(96,165,250,0.2)",
+    bg: "rgba(96,165,250,0.03)",
+    hoverBg: "rgba(96,165,250,0.08)",
+    hoverBorder: "rgba(96,165,250,0.4)",
+  },
+  {
+    label: "Free Streaming",
+    sublabel: "Tubi, Pluto TV, Plex, Peacock",
+    query: `watch free online Tubi Pluto Plex`,
+    accent: "#4ade80",
+    borderColor: "rgba(74,222,128,0.2)",
+    bg: "rgba(74,222,128,0.03)",
+    hoverBg: "rgba(74,222,128,0.08)",
+    hoverBorder: "rgba(74,222,128,0.4)",
+  },
   {
     label: "Netflix",
     sublabel: "Search on Netflix",
@@ -89,7 +108,16 @@ const buildActionLinks = (): ActionLink[] => [
     hoverBg: "rgba(56,189,248,0.08)",
     hoverBorder: "rgba(56,189,248,0.4)",
   },
-  
+  {
+    label: "Disney+",
+    sublabel: "Search on Disney+",
+    query: `Disney Plus`,
+    accent: "#818cf8",
+    borderColor: "rgba(129,140,248,0.2)",
+    bg: "rgba(129,140,248,0.03)",
+    hoverBg: "rgba(129,140,248,0.08)",
+    hoverBorder: "rgba(129,140,248,0.4)",
+  },
   {
     label: "Download",
     sublabel: "Legal digital download options",
@@ -100,7 +128,16 @@ const buildActionLinks = (): ActionLink[] => [
     hoverBg: "rgba(167,139,250,0.08)",
     hoverBorder: "rgba(167,139,250,0.4)",
   },
-  
+  {
+    label: "JustWatch",
+    sublabel: "All platforms in your region",
+    query: `JustWatch`,
+    accent: "#94a3b8",
+    borderColor: "rgba(255,255,255,0.08)",
+    bg: "transparent",
+    hoverBg: "rgba(255,255,255,0.04)",
+    hoverBorder: "rgba(255,255,255,0.2)",
+  },
 ];
 
 // ── Component ─────────────────────────────────────────────────────────────
@@ -124,7 +161,7 @@ const MovieModal = ({ isOpen, onClose, movieId }: Props) => {
     (vid) => vid.site === "YouTube" && (vid.type === "Trailer" || vid.type === "Teaser")
   );
 
-  const actionLinks = movie ? buildActionLinks(movie.title, movie.imdb_id) : [];
+  const actionLinks = buildActionLinks();
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} size="4xl" isCentered scrollBehavior="inside">
