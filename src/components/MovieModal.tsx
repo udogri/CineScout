@@ -9,7 +9,6 @@ import {
   Box,
   Center,
   HStack,
-  VStack,
   Divider,
   Link,
   SimpleGrid,
@@ -57,7 +56,7 @@ interface ActionLink {
   hoverBorder: string;
 }
 
-const buildActionLinks = (title: string, imdbId?: string): ActionLink[] => [
+const buildActionLinks = (): ActionLink[] => [
   {
     label: "Stream Online",
     sublabel: "Find where to watch free or subscription",
