@@ -9,7 +9,6 @@ import {
   Box,
   Center,
   HStack,
-  VStack,
   Divider,
   Link,
   SimpleGrid,
