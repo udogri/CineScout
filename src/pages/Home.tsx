@@ -22,10 +22,20 @@ const Home = () => {
       position="relative"
       overflow="hidden"
       display="flex"
-      py={{base:"0px", md:"50px"}}
+      py={{ base: "0px", md: "50px" }}
       alignItems="center"
       justifyContent="center"
+      bgImage="url('/public/Cover.jpg')"
+      bgSize="cover"
+      bgPosition="center"
+      bgRepeat="no-repeat"
     >
+      <Box
+        position="absolute"
+        inset={0}
+        bg="rgba(0, 0, 0, 0.75)"
+        zIndex={0}
+      />
       {/* Background radial glow */}
       <Box
         position="absolute"
@@ -94,7 +104,7 @@ const Home = () => {
 
         <Text
           fontSize={{ base: "sm", md: "md" }}
-          color="gray.500"
+          color="white"
           maxW="460px"
           lineHeight="1.8"
           mb={10}
@@ -160,7 +170,7 @@ const Home = () => {
               >
                 {num}
               </Text>
-              <Text fontSize="9px" letterSpacing="0.25em" textTransform="uppercase" color="gray.600">
+              <Text fontSize="9px" letterSpacing="0.25em" textTransform="uppercase" color="white">
                 {label}
               </Text>
             </VStack>
