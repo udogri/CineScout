@@ -25,7 +25,7 @@ const Home = () => {
       py={{ base: "0px", md: "50px" }}
       alignItems="center"
       justifyContent="center"
-      bgImage="url('/public/Cover.jpg')"
+      bgImage="url('/Cover.jpg')"
       bgSize="cover"
       bgPosition="center"
       bgRepeat="no-repeat"
